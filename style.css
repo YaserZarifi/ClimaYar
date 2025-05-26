@@ -11,7 +11,7 @@ body.font-inter {
 #fixed-location-box {
   z-index: 999;
   opacity: 0.95;
-  max-width: 220px;
+  max-width: 500px !important;
 }
 
 .loader {
@@ -128,6 +128,7 @@ body.dark #fixed-location-box {
   background-color: #1f2937;
   color: #e5e7eb;
   box-shadow: 0 0 8px rgba(0,0,0,0.7);
+  
 }
 
 body.dark #daily-forecast > div,
@@ -165,3 +166,42 @@ body.dark .loader {
   border-color: #4f46e5;
   border-top-color: #818cf8;
 }
+
+.today-card {
+  background-color: #355b7d !important;
+  border: 2px solid #1d4868 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 0 10px rgba(132, 136, 141, 0.2) !important;
+  font-weight: bold !important;
+  color: #1c1c1c !important; /* Picked a more visible text color */
+    outline: 3px dashed #02d9ff;
+  transition: outline 1s ease-in-out;
+}
+
+
+
+.current-hour-card {
+  background-color: #355b7d !important;
+  border: 2px solid #1d4868 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 0 10px rgba(132, 136, 141, 0.2) !important;
+  font-weight: bold !important;
+  color: #1c1c1c !important; /* Picked a more visible text color */
+    outline: 3px dashed #02d9ff;
+  transition: outline 1s ease-in-out;
+}
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 10px rgba(255, 193, 7, 0.4); }
+  50% { box-shadow: 0 0 18px rgba(186, 170, 255, 0.8); }
+  100% { box-shadow: 0 0 10px rgba(255, 193, 7, 0.4); }
+}
+
+.current-hour-card {
+  animation: pulseGlow 2s infinite;
+}
+
+/* .highlight {
+  outline: 3px dashed #02d9ff;
+  transition: outline 1s ease-in-out;
+} */
+

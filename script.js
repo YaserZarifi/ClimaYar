@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    loader.style.display = "block";
+loader.classList.remove("d-none");
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       (err) => {
         userLocation_lat_long.textContent = "❗ Location access was denied by the user.";
-        loader.style.display = "none";
+loader.classList.add("d-none");
       }
     );
   });
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${lat},${lon}&days=9`;
 
     try {
-      loader.style.display = "block";
+loader.classList.remove("d-none");
       clearForecasts();
 
       const response = await fetch(url);
@@ -115,49 +115,122 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-      data.forecast.forecastday.forEach((day) => {
-        const dateObj = new Date(day.date);
-        const dayName = daysOfWeek[dateObj.getDay()];
-        const formattedDate = `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
+data.forecast.forecastday.forEach((day) => {
+  const dateObj = new Date(day.date);
+  const dayName = daysOfWeek[dateObj.getDay()];
+  const formattedDate = `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
 
-        const dayDiv = document.createElement("div");
-        dayDiv.classList.add("card");
+  const dayDiv = document.createElement("div");
+    dayDiv.classList.add("card");
 
-        dayDiv.innerHTML = `
-          <h5 class="font-semibold">${dayName}</h5>
-          <p>${formattedDate}</p>
-          <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" />
-          <p >${day.day.condition.text}</p>
-          <p>🌡️ ${day.day.maxtemp_c}°C / ${day.day.mintemp_c}°C</p>
-        `;
+    // 🧠 Check if this date is today
+    const today = new Date();
+    const isToday =
+        dateObj.getDate() === today.getDate() &&
+        dateObj.getMonth() === today.getMonth() &&
+        dateObj.getFullYear() === today.getFullYear();
 
-        dailyForecastDiv.appendChild(dayDiv);
-      });
+    if (isToday) {
+        dayDiv.classList.add("today-card"); // Highlight today's card
+    }
+
+    dayDiv.innerHTML = `
+        <h5 class="font-semibold">${dayName}</h5>
+        <p>${formattedDate}</p>
+        <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" />
+        <p>${day.day.condition.text}</p>
+        <p>🌡️ ${day.day.maxtemp_c}°C / ${day.day.mintemp_c}°C</p>
+    `;
+
+    dailyForecastDiv.appendChild(dayDiv);
+
+    });
+
 
       const hoursToday = data.forecast.forecastday[0].hour;
       const hoursTomorrow = data.forecast.forecastday[1]?.hour || [];
 
-      [...hoursToday, ...hoursTomorrow].forEach((hour) => {
-        const hourDiv = document.createElement("div");
-        hourDiv.classList.add("card");
-        const time = hour.time.split(" ")[1];
+  const now = new Date();
+const currentHour = now.getHours();
+const currentDate = now.toISOString().split("T")[0]; // e.g., "2025-05-26"
 
-        hourDiv.innerHTML = `
-          <strong class="d-block mb-1">${time}</strong>
-          <img src="https:${hour.condition.icon}" alt="${hour.condition.text}" class="mb-1" />
-          <span class="small">${hour.temp_c}°C - ${hour.condition.text}</span>
-        `;
+[...hoursToday, ...hoursTomorrow].forEach((hour) => {
+  const hourDiv = document.createElement("div");
+  hourDiv.classList.add("card");
+  const time = hour.time.split(" ")[1];
+  const hourDate = hour.time.split(" ")[0];
+  const hourHour = parseInt(time.split(":")[0]);
 
-        hourlyForecastDiv.appendChild(hourDiv);
-      });
+  // Tag current hour
+  if (hourDate === currentDate && hourHour === currentHour) {
+    hourDiv.classList.add("current-hour-card");
+    hourDiv.setAttribute("id", "current-hour"); // For scrolling
+  }
+
+  hourDiv.innerHTML = `
+    <strong class="d-block mb-1">${time}</strong>
+    <img src="https:${hour.condition.icon}" alt="${hour.condition.text}" class="mb-1" />
+    <span class="small">${hour.temp_c}°C - ${hour.condition.text}</span>
+  `;
+
+  hourlyForecastDiv.appendChild(hourDiv);
+});
+
+
+
+
+
+
+
+const observer = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const currentHourCard = document.getElementById("current-hour");
+      if (currentHourCard) {
+        // Smooth scroll to the current hour
+        currentHourCard.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest",
+        });
+
+        // 🔥 Briefly highlight the current hour
+        currentHourCard.classList.add("highlight");
+        setTimeout(() => {
+          currentHourCard.classList.remove("highlight");
+        }, 5000);
+      }
+
+      // Disconnect observer to prevent repeated scrolls
+      observer.disconnect();
+    }
+  });
+}, {
+  threshold: 0.5
+});
+
+const hourlySection = document.getElementById("hourly-section");
+if (hourlySection) {
+  observer.observe(hourlySection);
+}
+
+
+
+
+
+
+
+
+
+
 
       cachedHourlyData = [...hoursToday, ...hoursTomorrow];
 
-      loader.style.display = "none";
+loader.classList.add("d-none");
       initChartObserver(); // Activate observer for chart rendering
     } catch (error) {
       console.error("Error fetching weather data:", error);
-      loader.style.display = "none";
+loader.classList.add("d-none");
       document.getElementById("weather-card").textContent =
         "Error fetching weather data.";
       clearForecasts();

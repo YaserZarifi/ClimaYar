@@ -32,7 +32,7 @@
       Your IP: <span id="user-ip">Fetching . . .</span>
     </p>
     <p style="margin:0; font-size: 0.7rem; color: #aaa;">
-      Rough Location: <span id="user-location-ip">Detecting . . .</span>
+      Approximate Location: <span id="user-location-ip">Detecting . . .</span>
     </p>
   </div>
   </header>
@@ -40,53 +40,79 @@
   <!-- Main Content -->
   <main class="container py-5 flex-grow-1">
     
-    <section class="text-center mb-4">
-      <button id="get-location" class="btn btn-primary">
-        My Location
-      </button>
-      <p class="mt-2 small fw-semibold">
-        <span id="user-location-lat-long"></span>
-      </p>
-    </section>
+   <div class="container mb-5">
+  <div class="row g-4">
 
-    <div class="mb-4 text-center">
-      <select id="city-select" class="form-select w-auto d-inline-block">
-        <option value="">Select City</option>
-        <option value="Tehran">Tehran</option>
-        <option value="Mashhad">Mashhad</option>
-        <option value="Isfahan">Isfahan</option>
-        <option value="Shiraz">Shiraz</option>
-        <option value="Tabriz">Tabirz</option>
-      </select>
+    <!-- Weather Card (Left) -->
+    <div class="col-md-6">
+      <section id="weather-card" class="card text-center shadow-sm h-100">
+        <div class="card-body">
+          <h2 id="weather-date" class="fs-6 fw-semibold mb-2"></h2>
+          <h2 id="loc" class="fs-5 fw-bold mb-3"></h2>
+          <p id="weather-temp-range" class="display-1 fw-bold text-center my-3"></p>
+          <img id="weather-icon" class="mx-auto d-block mb-2" width="80" height="80" alt="Weather Icon" />
+          <p id="weather-condition" class="fs-6 mb-1"></p>
+          <p id="weather-rain-chance" class="small text-primary"></p>
+        </div>
+      </section>
     </div>
 
-    <!-- Loader -->
-    <div id="loader" class="loader mx-auto my-4"></div>
+    <!-- Controls Card (Right) -->
+    <div class="col-md-6">
+      <section class="card shadow-sm h-100 d-flex justify-content-center">
+        <div class="card-body text-center">
+          <h5 class="card-title fw-semibold mb-3">Select Location</h5>
 
-    <section id="weather-card" class="card text-center mb-5 shadow-sm">
-      <div class="card-body">
-        <h2 id="weather-date" class="fs-6 fw-semibold mb-2"></h2>
-        <h2 id="loc" class="fs-5 fw-bold mb-3"></h2>
-        <img id="weather-icon" class="mx-auto d-block mb-2" width="80" height="80" alt="آیکون وضعیت آب و هوا" />
-        <p id="weather-condition" class="fs-6 mb-1"></p>
-        <p id="weather-temp-range" class="small mb-1"></p>
-        <p id="weather-rain-chance" class="small text-primary"></p>
-      </div>
-    </section>
+          <button id="get-location" class="btn btn-primary w-100 mb-3">
+            📍 Use My Location
+          </button>
+
+          <select id="city-select" class="form-select w-100 mb-3">
+            <option value="">Select City</option>
+            <option value="Tehran">Tehran</option>
+            <option value="Mashhad">Mashhad</option>
+            <option value="Isfahan">Isfahan</option>
+            <option value="Shiraz">Shiraz</option>
+            <option value="Tabriz">Tabriz</option>
+          </select>
+
+          <p class="small fw-semibold" style="color: #888;">
+            <span id="user-location-lat-long"></span>
+          </p>
+
+          <!-- Loader -->
+
+          <div id="loader" class="mx-auto my-4 d-none">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        </div>
+
+        </div>
+      </section>
+    </div>
+
+  </div>
+</div>
+
+
+      <h2 class="fs-5 fw-semibold text-center mb-3" style="color: #aaa;">Daily Forcast</h2>
 
     <section class="mb-5">
-      <h2 class="fs-5 fw-semibold text-center mb-3">Daily Forcast</h2>
       <div id="daily-forecast" class="d-flex overflow-auto gap-3 px-2 py-2">
 
       </div>
     </section>
 
-    <section class="mb-5">
-      <h2 class="fs-5 fw-semibold text-center mb-3">Today's & Tomrrow's Hourly Forcast</h2>
+      <h2 class="fs-5 fw-semibold text-center mb-3" style="color: #aaa;">Today's & Tomrrow's Hourly Forcast</h2>
+
+    <section class="mb-5"  id="hourly-section">
       <div id="hourly-forecast" class="d-flex overflow-auto gap-3 px-2 py-2">
 
     </div>
     </section>
+
+
 
     <section id="charts-section" class="mb-5">
       <canvas id="weatherChart" class="mb-4"></canvas>
