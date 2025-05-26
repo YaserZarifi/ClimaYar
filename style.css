@@ -8,6 +8,7 @@ body.font-inter {
 }
 
 
+
 #fixed-location-box {
   z-index: 999;
   opacity: 0.95;
@@ -204,4 +205,12 @@ body.dark .loader {
   outline: 3px dashed #02d9ff;
   transition: outline 1s ease-in-out;
 } */
+
+
+#city-map{
+
+  position: relative;   /* or absolute/fixed depending on your layout */
+  z-index: 1;           /* a controlled, modest z-index */
+}
+
 

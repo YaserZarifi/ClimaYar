@@ -61,7 +61,26 @@ loader.classList.remove("d-none");
         userLocation_lat_long.textContent = ` ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
 
         fetchWeather(lat, lon);
+    if (map) {
+      map.setView([lat, lon], 13);
+
+      if (marker) {
+        map.panTo([lat, lon], {animate: true, duration: 1.0});
+
+        marker.setLatLng([lat, lon]);
+        
+        // Now update the popup text with city name (or "Current Location")
+        marker.bindPopup("Current Location: " + lat + " - " + lon).openPopup();
+      } else {
+        marker = L.marker([lat, lon]).addTo(map);
+        marker.bindPopup("Current Location: " + lat + " - " + lon).openPopup();
+      }
+    }
+
+        
       },
+
+
       (err) => {
         userLocation_lat_long.textContent = "❗ Location access was denied by the user.";
 loader.classList.add("d-none");
@@ -89,6 +108,38 @@ loader.classList.add("d-none");
   });
 
   let cachedHourlyData = [];  // Cache the data so charts can be rendered on scroll
+
+
+
+
+  let map = L.map('city-map').setView([35.6892, 51.3890], 10); // Tehran default
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+let marker = L.marker([35.6892, 51.3890]).addTo(map)
+  .bindPopup('Tehran')
+  .openPopup();
+
+
+
+
+  document.getElementById('city-select').addEventListener('change', function() {
+  const selectedOption = this.options[this.selectedIndex];
+  const lat = parseFloat(selectedOption.dataset.lat);
+  const lng = parseFloat(selectedOption.dataset.lng);
+  const cityName = selectedOption.text;
+
+  if (!isNaN(lat) && !isNaN(lng)) {
+    map.setView([lat, lng], 11);
+    marker.setLatLng([lat, lng]).setPopupContent(cityName).openPopup();
+  }
+});
+
+
+
+
 
   async function fetchWeather(lat, lon) {
     const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${lat},${lon}&days=9`;
@@ -137,7 +188,7 @@ data.forecast.forecastday.forEach((day) => {
     dayDiv.innerHTML = `
         <h5 class="font-semibold">${dayName}</h5>
         <p>${formattedDate}</p>
-        <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" />
+        <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" style="display: block; margin: 0 auto;" />
         <p>${day.day.condition.text}</p>
         <p>🌡️ ${day.day.maxtemp_c}°C / ${day.day.mintemp_c}°C</p>
     `;
@@ -169,17 +220,12 @@ const currentDate = now.toISOString().split("T")[0]; // e.g., "2025-05-26"
 
   hourDiv.innerHTML = `
     <strong class="d-block mb-1">${time}</strong>
-    <img src="https:${hour.condition.icon}" alt="${hour.condition.text}" class="mb-1" />
+    <img src="https:${hour.condition.icon}" alt="${hour.condition.text}" class="mb-1" style="display: block; margin: 0 auto;" />
     <span class="small">${hour.temp_c}°C - ${hour.condition.text}</span>
   `;
 
   hourlyForecastDiv.appendChild(hourDiv);
 });
-
-
-
-
-
 
 
 const observer = new IntersectionObserver((entries, observer) => {
@@ -213,14 +259,6 @@ const hourlySection = document.getElementById("hourly-section");
 if (hourlySection) {
   observer.observe(hourlySection);
 }
-
-
-
-
-
-
-
-
 
 
 
