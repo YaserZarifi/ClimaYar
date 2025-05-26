@@ -108,8 +108,10 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("weather-icon").src = "https:" + today.day.condition.icon;
       document.getElementById("weather-icon").alt = today.day.condition.text;
       document.getElementById("weather-condition").textContent = today.day.condition.text;
-      document.getElementById("weather-temp-range").textContent = `${today.day.mintemp_c}°C - ${today.day.maxtemp_c}°C`;
-      document.getElementById("weather-rain-chance").textContent = `Chance of rain: ${today.day.daily_chance_of_rain}%`;
+    //   document.getElementById("weather-temp-range").textContent = `${today.day.mintemp_c}°C / ${today.day.maxtemp_c}°C`;
+    document.getElementById("weather-temp-range").textContent = `${data.current.temp_c}°C`;
+
+     document.getElementById("weather-rain-chance").textContent = `Chance of rain: ${today.day.daily_chance_of_rain}%`;
 
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
