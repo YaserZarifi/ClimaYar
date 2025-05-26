@@ -1,0 +1,10 @@
+/* style.css */
+
+body {
+  font-family: 'Vazir', sans-serif;
+}
+
+.dark .card {
+  background-color: #1f2937; /* bg-gray-800 */
+  color: white;
+}

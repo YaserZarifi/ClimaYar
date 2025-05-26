@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پیش‌بینی آب و هوا</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Vazir Font -->
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white font-sans">
+
+  <!-- Header -->
+  <header class="text-center py-4 shadow bg-white dark:bg-gray-800">
+    <h1 class="text-3xl font-bold">پیش‌بینی وضعیت آب و هوا</h1>
+  </header>
+
+  <!-- موقعیت کاربر -->
+  <section class="p-4 text-center">
+    <p class="text-lg mb-2">📍 موقعیت شما: <span id="user-location">در حال شناسایی...</span></p>
+    <button id="get-location" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+      دریافت مکان دقیق من
+    </button>
+    <div class="mt-4">
+      <label for="city-selector" class="block mb-1">یا انتخاب شهر:</label>
+      <select id="city-selector" class="p-2 rounded border w-60">
+        <option>در حال بارگذاری شهرها...</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- آب و هوای فعلی -->
+  <section class="p-4">
+    <div id="current-weather" class="text-center">
+      <!-- وضعیت فعلی اینجا نشون داده میشه -->
+    </div>
+  </section>
+
+  <!-- پیش‌بینی ۷ روزه -->
+  <section class="p-4">
+    <h2 class="text-xl font-semibold text-center mb-4">پیش‌بینی ۷ روز آینده</h2>
+    <div id="daily-forecast" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- کارت‌های پیش‌بینی روزانه اینجا میان -->
+    </div>
+  </section>
+
+  <!-- پیش‌بینی ساعتی -->
+  <section class="p-4">
+    <h2 class="text-xl font-semibold text-center mb-4">پیش‌بینی ساعتی امروز و فردا</h2>
+    <div id="hourly-forecast" class="overflow-x-auto whitespace-nowrap flex gap-4 px-2">
+      <!-- کارت‌های ساعتی -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="p-4 text-center mt-8">
+    <button id="toggle-theme" class="mx-2 text-sm underline">تغییر تم</button>
+    <button id="toggle-lang" class="mx-2 text-sm underline">EN / FA</button>
+  </footer>
+
+  <!-- Script -->
+  <script src="script.js"></script>
+</body>
+</html>
