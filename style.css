@@ -1,25 +1,118 @@
+/* ==========================================================================
+   Global Styles & Theme Variables (Conceptual)
+   ========================================================================== */
+
 body {
+  position: relative; /* Useful for ::before if not using fixed positioning for it */
   padding-top: 60px;
+  background-color: #f8f9fa; /* Fallback for light mode */
+  color: #212529;
+  font-family: "Vazir", Tahoma, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Ensure body takes at least full height for background visibility */
+  min-height: 100vh;
 }
+
 
 body.font-inter {
   font-family: "Inter", sans-serif;
 }
 
-#fixed-location-box {
-  z-index: 999;
-  opacity: 0.95;
-  max-width: 500px !important;
+/* ==========================================================================
+   Theme: Dark Mode
+   ========================================================================== */
+
+body.dark {
+  background-color: #111827;
+  color: #e5e7eb;
 }
 
-.loader {
-  border: 4px solid #ccc;
-  border-top-color: #3b82f6;
+
+
+body.dark header  {
+  background-color: #1a202c; 
+  color: #e5e7eb;
+  border-bottom: 1px solid #2d3748;
+}
+
+body.dark .card { /* General card style for dark mode */
+  background-color: #1f2937;
+  color: #e5e7eb;
+  border: 1px solid #374151; /* Subtle border for definition */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark #fixed-location-box {
+  background-color: #2d3748; /* Darker than general card */
+  color: #cbd5e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+body.dark select#city-select {
+  background-color: #2d3748;
+  color: #e5e7eb;
+  border-color: #4a5568;
+}
+
+body.dark select#city-select:focus {
+  border-color: #6366f1; /* Dark mode accent */
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+body.dark .loader {
+  border-color: #4a5568; /* Dark mode loader base */
+  border-top-color: #818cf8; /* Dark mode loader accent */
+}
+
+/* ==========================================================================
+   Header & Footer (Light Mode Default)
+   ========================================================================== */
+header {
+  background-color: #ffffff;
+  color: #212529;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#fixed-location-box {
+  z-index: 999;
+  opacity: 0.9;
+  max-width: 220px; /* Adjusted for potentially longer city names */
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  font-size: 0.8rem;
+}
+#fixed-location-box p {
+  margin-bottom: 0.25rem;
+}
+#fixed-location-box #user-ip {
+  font-weight: 600;
+  color: #4a5568;
+}
+body.dark #fixed-location-box #user-ip {
+  color: #a0aec0;
+}
+#fixed-location-box #user-location-ip {
+  color: #718096;
+}
+body.dark #fixed-location-box #user-location-ip {
+  color: #718096;
+}
+
+
+/* ==========================================================================
+   Loaders
+   ========================================================================== */
+.loader { /* General loader, used if #weather-card-loader is not specific enough */
+  border: 4px solid #e0e0e0;
+  border-top-color: #6366f1; /* Light mode accent */
   border-radius: 50%;
   width: 3rem;
   height: 3rem;
   animation: spin 1s linear infinite;
-  display: none;
+  display: none; /* Should be controlled by JS */
   margin: 1rem auto;
 }
 
@@ -29,225 +122,253 @@ body.font-inter {
   }
 }
 
+/* ==========================================================================
+   Forecast Cards (Daily & Hourly) - Base Styles
+   ========================================================================== */
 #daily-forecast > div,
 #hourly-forecast > div {
-  background: rgb(255, 255, 255);
+  background: #ffffff;
+  border: 1px solid #e9ecef; /* Default border for all sides */
   border-radius: 0.75rem;
-  box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
-  padding: 0.5rem 1rem;
-  min-width: 100px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  padding: 0.75rem 1rem; /* Default padding */
+  min-width: 110px;
   text-align: center;
   flex-shrink: 0;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease-out, box-shadow 0.2s ease-out, max-height 0.4s ease-in-out, border-color 0.3s ease;
+  color: #4a5568;
 }
 
-.dark #daily-forecast > div,
-.dark #hourly-forecast > div {
-  background: #c6c6c9;
-  color: rgb(201, 189, 255);
+#daily-forecast > div:hover,
+#hourly-forecast > div:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+body.dark #daily-forecast > div,
+body.dark #hourly-forecast > div {
+  background: #2c3047;
+  color: #c5c9e0;
+  border: 1px solid #3a3f5a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+body.dark #daily-forecast > div:hover,
+body.dark #hourly-forecast > div:hover {
+  background-color: #353a52;
 }
 
 #daily-forecast img,
 #hourly-forecast img {
-  margin: 0.5rem 0;
+  margin: 0.5rem auto;
   width: 48px;
   height: 48px;
+  display: block;
 }
 
+/* ==========================================================================
+   Expandable Daily Card Styles
+   ========================================================================== */
+.daily-card {
+  overflow: hidden;
+  max-height: 230px;
+  cursor: pointer;
+}
+
+.daily-card.expanded {
+  max-height: 450px;
+}
+
+.daily-card.expanded,
+.daily-card.active {
+  background-color: #eef2ff;
+  border-color: #c7d2fe;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+body.dark .daily-card.expanded,
+body.dark .daily-card.active {
+  background-color: #312e6b;
+  border-color: #4f46e5; 
+  color: #e0e7ff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+
+/* Details section within the daily card */
+.daily-card-details {
+  opacity: 0; /* Start transparent */
+  max-height: 0; /* Start with no height */
+  overflow: hidden; /* Crucial to hide content when max-height is 0 */
+  
+  margin-top: 10px; 
+  border-top: 1px solid rgba(128, 128, 128, 0.2);
+  padding-top: 10px;
+  
+  transition: opacity 0.3s ease-in-out, max-height 0.4s ease-in-out, 
+              margin-top 0.4s ease-in-out, padding-top 0.4s ease-in-out;
+}
+
+/* When the parent .daily-card has the .expanded class */
+.daily-card.expanded .daily-card-details {
+  opacity: 1; /* Become fully visible */
+  max-height: 200px
+}
+
+body.dark .daily-card-details {
+  border-top: 1px solid #4a5568;
+}
+
+.daily-card-details p {
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+  text-align: left;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.daily-card-details p i {
+  margin-right: 8px;
+  width: 16px;
+  text-align: center;
+}
+.daily-card-details strong {
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Special Highlight Cards: Today & Current Hour
+   ========================================================================== */
+
+
+/* Current Hour Card Styles */
+.current-hour-card {
+  border-width: 2px; /* This applies to all borders of current-hour-card */
+  font-weight: bold;
+  animation-name: pulseGlow;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+body:not(.dark) .current-hour-card {
+  background-color: #dbeafe;
+  border-color: #93c5fd; 
+  color: #1e40af;
+}
+body.dark .current-hour-card {
+  background-color: #5a7baf !important;
+  border-color: #60a5fa;
+  color: #bfdbfe;
+  animation-name: pulseGlowDark;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(99, 102, 241, 0.6);
+  }
+}
+
+@keyframes pulseGlowDark {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(129, 140, 248, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(129, 140, 248, 0.7);
+  }
+}
+
+/* ==========================================================================
+   Scrollbar - REFINED
+   ========================================================================== */
 .scrollbar-thin::-webkit-scrollbar {
-  height: 6px;
-  width: 6px;
+  height: 5px;
+  width: 5px; 
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: #6b6e72;
-  border-radius: 3px;
-}
-
+/* Light Mode Scrollbar */
 .scrollbar-thin::-webkit-scrollbar-track {
-  background-color: #e5e7eb;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1; 
+  border-radius: 10px; 
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #a8a8a8; 
 }
 
-.select-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100px;
-  margin: 20px 0;
+/* Dark Mode Scrollbar */
+body.dark .scrollbar-thin::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.04); 
+}
+body.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #4b5563; 
+}
+body.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280; 
 }
 
+/* ==========================================================================
+   Form Elements (City Select)
+   ========================================================================== */
 #city-select {
   font-family: "Vazir", Tahoma, sans-serif;
-  font-size: 16px;
-  padding: 8px 12px;
-  border: 2px solid #7a7c7e;
-  border-radius: 8px;
-  background-color: rgb(211, 211, 255);
-  color: #333;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 0.375rem;
+  background-color: #ffffff;
+  color: #2d3748;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   cursor: pointer;
-  width: 200px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  background-image: url('data:image/svg+xml;utf8,<svg fill="%233498db" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%234A5568" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
   background-repeat: no-repeat;
-  background-position: right 12px center;
+  background-position: right 0.75rem center;
   background-size: 16px 16px;
 }
 
 #city-select:focus {
   outline: none;
-  border-color: #1abc9c;
-  box-shadow: 0 0 8px rgba(26, 188, 156, 0.6);
-}
-
-body.dark {
-  background-color: #111827;
-  color: #e5e7eb;
-}
-
-body.dark .card {
-  background-color: #1f2937;
-  color: #e5e7eb;
-  border: none;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-body.dark header,
-body.dark footer {
-  background-color: #111827;
-  color: #e5e7eb;
-}
-
-body.dark #fixed-location-box {
-  background-color: #1f2937;
-  color: #e5e7eb;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
-}
-
-body.dark #daily-forecast > div,
-body.dark #hourly-forecast > div {
-  background-color: #0d0251;
-  color: #d1d5db;
-  border-radius: 0.75rem;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
-  min-width: 100px;
-  padding: 0.5rem 1rem;
-  flex-shrink: 0;
-  text-align: center;
-  transition: background-color 0.3s ease;
-}
-
-body.dark #daily-forecast > div:hover,
-body.dark #hourly-forecast > div:hover {
-  background-color: #372ea3;
-  color: white;
-}
-
-body.dark select.form-select {
-  background-color: #111827;
-  color: #e5e7eb;
-  border-color: #4f46e5;
-}
-
-body.dark select.form-select:focus {
   border-color: #6366f1;
-  box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
-  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
-body.dark .loader {
-  border-color: #4f46e5;
-  border-top-color: #818cf8;
-}
-
-.today-card {
-  background-color: #355b7d !important;
-  border: 2px solid #1d4868 !important;
-  border-radius: 10px !important;
-  box-shadow: 0 0 10px rgba(132, 136, 141, 0.2) !important;
-  font-weight: bold !important;
-  color: #1c1c1c !important; /* Picked a more visible text color */
-  outline: 3px dashed #02d9ff;
-  transition: outline 1s ease-in-out;
-}
-
-.current-hour-card {
-  background-color: #355b7d !important;
-  border: 2px solid #1d4868 !important;
-  border-radius: 10px !important;
-  box-shadow: 0 0 10px rgba(132, 136, 141, 0.2) !important;
-  font-weight: bold !important;
-  color: #1c1c1c !important; /* Picked a more visible text color */
-  outline: 3px dashed #02d9ff;
-  transition: outline 1s ease-in-out;
-}
-@keyframes pulseGlow {
-  0% {
-    box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 18px rgba(186, 170, 255, 0.8);
-  }
-  100% {
-    box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
-  }
-}
-
-.current-hour-card {
-  animation: pulseGlow 2s infinite;
-}
-
-/* .highlight {
-  outline: 3px dashed #02d9ff;
-  transition: outline 1s ease-in-out;
-} */
-
+/* ==========================================================================
+   Map Styles
+   ========================================================================== */
 #city-map {
-  position: relative; /* or absolute/fixed depending on your layout */
-  z-index: 1; /* a controlled, modest z-index */
+  position: relative;
+  z-index: 1;
+  border-radius: 0.375rem;
 }
 
-/* Add this to the end of style.css */
-.daily-card.active {
-  border: 2px solid #6366f1 !important;
-  background-color: #372ea3 !important;
-  transform: translateY(-4px) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-  background-color: #4f46e5 !important; /* A slightly lighter purple from the theme */
-  border-color: #818cf8 !important;
-  color: #e5e7eb !important; 
-}
-
-
-#map-container.maximized {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important; 
-  height: 100vh !important;
-  z-index: 2000 !important;
-  border-radius: 0 !important;
-}
-
-
-
-/* In style.css */
-
-/* 1. Style for the background overlay */
 #map-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
-  z-index: 1999; /* Below the map window, above everything else on the page */
-  display: none; /* Initially hidden */
+  background-color: rgba(0, 0, 0, 0.65);
+  z-index: 1999;
+  display: none;
+  pointer-events: auto;
 }
 
-/* 2. Styles for the maximized map "window" */
+#map-container {
+  transition: width 0.4s ease-in-out, 
+              height 0.4s ease-in-out, 
+              top 0.4s ease-in-out, 
+              left 0.4s ease-in-out, 
+              transform 0.4s ease-in-out,
+              border-radius 0.4s ease-in-out;
+}
+
 #map-container.maximized {
   position: fixed !important;
   top: 50% !important;
@@ -255,36 +376,43 @@ body.dark .loader {
   transform: translate(-50%, -50%) !important;
   width: 90vw !important;
   height: 85vh !important;
-  max-width: 1200px; /* Optional: max width on very large screens */
-  z-index: 2000 !important; /* The map window itself, above the overlay */
+  max-width: 1200px;
+  z-index: 2000 !important;
   border-radius: 0.5rem !important;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+#map-container.maximized #city-map {
+  border-radius: 0.5rem;
 }
 
-/* 3. Styles for your custom map controls container */
 #map-custom-controls {
   position: absolute;
   top: 10px;
   right: 10px;
-  /* This z-index ensures controls are on top of Leaflet map panes (tiles, markers, etc.)
-     Leaflet panes can go up to z-index 700 for popups. */
   z-index: 800;
 }
+#map-container.maximized #map-custom-controls {
+    z-index: 2001;
+}
 
-
-/* Styles for the skeleton placeholder cards */
+/* ==========================================================================
+   Skeleton Loaders
+   ========================================================================== */
 .skeleton-card {
-  background-color: #2d3748; /* A dark, neutral color */
+  background-color: #e2e8f0;
   border-radius: 0.75rem;
   padding: 0.5rem 1rem;
   min-width: 100px;
-  height: 190px; /* Should match the approximate height of your real cards */
+  height: 190px;
   flex-shrink: 0;
   position: relative;
-  overflow: hidden; /* This is crucial for the shimmer effect */
+  overflow: hidden;
+}
+body.dark .skeleton-card {
+  background-color: #2d3748;
 }
 
-/* The shimmer animation element */
 .skeleton-card::after {
   content: '';
   position: absolute;
@@ -292,11 +420,13 @@ body.dark .loader {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.04), transparent);
   animation: skeleton-shimmer 1.5s infinite;
 }
+body.dark .skeleton-card::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+}
 
-/* The keyframes for the shimmer animation */
 @keyframes skeleton-shimmer {
   0% {
     transform: translateX(-100%);
@@ -306,10 +436,139 @@ body.dark .loader {
   }
 }
 
+/* ==========================================================================
+   Transitions for Content Fade-in (JS controlled opacity)
+   ========================================================================== */
+#weather-details,
+#daily-forecast,
+#hourly-forecast {
+  transition: opacity 0.4s ease-in-out;
+}
 
-#map-custom-controls {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 2001; 
+.daily-card.today-card {
+  font-weight: bold;
+  border-left-width: 4px; 
+  padding-left: calc(1rem - 3px);
+}
+
+body:not(.dark) .daily-card.today-card {
+  border-color: #6366f1 !important;
+}
+
+body:not(.dark) .daily-card.today-card:not(.active):not(.expanded) {
+  background-color: #f0f2ff !important; 
+}
+
+/* Today's Card - Dark Mode Specifics */
+body.dark .daily-card.today-card {
+  border-color: #818cf8 !important; 
+  border-style: dashed !important;
+  background-color: #87a4e4 !important; 
+}
+
+body.dark .daily-card.today-card:not(.active):not(.expanded) {
+  background-color: #59609e !important;
+}
+
+
+
+footer {
+background-color: #f8f9fa; 
+color: #495057; 
+padding: 1.5rem 1rem;
+text-align: center;
+font-size: 0.875rem;
+border-top: 1px solid #e9ecef; 
+}
+
+footer p {
+margin-bottom: 0.5rem;
+}
+
+footer a {
+color: #6366f1; 
+text-decoration: none;
+font-weight: 500;
+}
+footer a:hover {
+color: #4f46e5;
+text-decoration: underline;
+}
+
+/* *Dark Mode Footer Style  */
+body.dark footer {
+background-color: #1a202c; 
+
+color: #a0aec0; 
+
+border-top: 1px solid #2d3748;
+}
+
+body.dark footer a {
+color: #818cf8; 
+}
+body.dark footer a:hover {
+color: #a7afff;
+}
+
+
+footer p:last-child {
+font-style: italic;
+color: #6c757d; 
+}
+body.dark footer p:last-child {
+color: #718096; 
+}
+
+
+
+#fixed-location-box {
+position: absolute; 
+top: 12px;          /* Adjusted for a bit more space */
+right: 12px;
+z-index: 999;
+background-color: #ffffff; /* Make it a distinct box */
+color: #495057;
+border: 1px solid #dee2e6;
+border-radius: 0.375rem;
+padding: 0.6rem 0.8rem; 
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+font-size: 0.75rem;
+max-width: 230px;
+width: fit-content;
+opacity: 0.95; 
+}
+
+#fixed-location-box p {
+margin-bottom: 0.25rem;
+line-height: 1.4;
+}
+#fixed-location-box p:last-child {
+margin-bottom: 0;
+}
+
+#fixed-location-box strong,
+#fixed-location-box #user-ip {
+font-weight: 600;
+color: #212529;
+}
+
+#fixed-location-box #user-location-ip {
+color: #5a6268;
+}
+
+body.dark #fixed-location-box {
+background-color: #2d3748; 
+color: #adb5bd;
+border: 1px solid #495057;
+box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+}
+
+body.dark #fixed-location-box strong,
+body.dark #fixed-location-box #user-ip {
+color: #e9ecef;
+}
+
+body.dark #fixed-location-box #user-location-ip {
+color: #868e96;
 }

@@ -11,6 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
 let chartsFirstDrawn = false; 
 let activeDayIndex = 0;
 
+
+const citySelectSpinner = document.getElementById("city-select-spinner");
+
   const getLocationBtn = document.getElementById("get-location");
 const originalBtnHTML = getLocationBtn.innerHTML;
 
@@ -53,12 +56,12 @@ const setTheme = (theme) => {
     body.classList.add('dark');
     themeToggleIcon.classList.remove('fa-sun');
     themeToggleIcon.classList.add('fa-moon');
-    themeToggleIcon.style.color = '#e0e0e0'; // A nice color for the moon
+    themeToggleIcon.style.color = '#e0e0e0'; 
   } else {
     body.classList.remove('dark');
     themeToggleIcon.classList.remove('fa-moon');
     themeToggleIcon.classList.add('fa-sun');
-    themeToggleIcon.style.color = '#ffc107'; // A nice color for the sun
+    themeToggleIcon.style.color = '#ffc107';
   }
 };
 
@@ -67,19 +70,14 @@ const savedTheme = localStorage.getItem('theme');
 if (savedTheme) {
   setTheme(savedTheme);
 } else {
-  // Optional: Default to light theme if no theme is saved
   setTheme('light'); 
 }
 
-// Add click event listener to the button
 themeToggleBtn.addEventListener('click', () => {
-  // Check if the body currently has the 'dark' class
   if (body.classList.contains('dark')) {
-    // If it's dark, switch to light
     setTheme('light');
     localStorage.setItem('theme', 'light');
   } else {
-    // If it's light, switch to dark
     setTheme('dark');
     localStorage.setItem('theme', 'dark');
   }
@@ -105,8 +103,12 @@ themeToggleBtn.addEventListener('click', () => {
   }
 
   // --- NEW FUNCTION: Fetches 10 nearby cities from GeoNames ---
- async function fetchNearbyCities(lat, lon) {
-  // Step 1: Fetch 50 nearby cities within a 300km radius.
+
+async function fetchNearbyCities(lat, lon) {
+  // --- 1. Show Loading State ---
+  citySelect.disabled = true;
+  citySelect.innerHTML = `<option value="">Loading nearby cities...</option>`;
+
   const radius = 300; 
   const maxRows = 500; 
   const url = `https://secure.geonames.org/findNearbyPlaceNameJSON?lat=${lat}&lng=${lon}&radius=${radius}&maxRows=${maxRows}&username=${geonamesUsername}`;
@@ -119,20 +121,17 @@ themeToggleBtn.addEventListener('click', () => {
     const data = await response.json();
 
     if (data.geonames && data.geonames.length > 0) {
-      
       const selectedCities = [];
-      const indicesToPick = [55, 165, 400, 455, 499]; // Some Random locations nearby filtered from 500 locations nearby
+      const indicesToPick = [55, 165, 400, 455, 499];
 
       indicesToPick.forEach(index => {
-        // Check if a city exists at this index before adding it
         if (data.geonames[index]) {
           selectedCities.push(data.geonames[index]);
         }
       });
 
-      // Step 3: Populate the dropdown with the 5 selected cities.
       if (selectedCities.length > 0) {
-          citySelect.innerHTML = `<option value="">Select a nearby city(Location)</option>`;
+          citySelect.innerHTML = `<option value="">Select a nearby city (Location)</option>`;
           selectedCities.forEach((city) => {
               const option = document.createElement("option");
               option.value = city.name;
@@ -150,6 +149,9 @@ themeToggleBtn.addEventListener('click', () => {
   } catch (error) {
     console.error("Error fetching nearby cities:", error);
     citySelect.innerHTML = '<option value="">Error loading cities</option>';
+  } finally {
+    // --- 2. Restore dropdown after loading (on success or error) ---
+    citySelect.disabled = false;
   }
 }
 
@@ -166,20 +168,16 @@ themeToggleBtn.addEventListener('click', () => {
       userIp.textContent = ip;
       userLocation_ip.textContent = `${city}, ${country}`;
 
-      // --- THE FIX: Update map view and marker to the user's IP location ---
     map.setView([lat, lon], 10);
     marker.setLatLng([lat, lon]).setPopupContent(`${city}, ${country}`).openPopup();
 
-      // Fetch weather for the detected location
       fetchWeather(lat, lon);
-      // --- NEW: Call the function to get nearby cities ---
       fetchNearbyCities(lat, lon);
     })
     .catch(() => {
       userLocation_ip.textContent = "Location detection failed.";
     });
 
-  // --- MODIFIED: Geolocation button functionality ---
   getLocationBtn.addEventListener("click", () => {
     if (!navigator.geolocation) {
       userLocation_lat_long.textContent =
@@ -200,10 +198,8 @@ themeToggleBtn.addEventListener('click', () => {
           4
         )}`;
 
-        // This function will now handle restoring the button state
         fetchWeather(lat, lon);
 
-        // --- NEW: Call the function to get nearby cities ---
         fetchNearbyCities(lat, lon);
 
         if (map) {
@@ -218,29 +214,23 @@ themeToggleBtn.addEventListener('click', () => {
       (err) => {
         userLocation_lat_long.textContent =
           "❗ Location access was denied by the user.";
-        // loader.classList.add("d-none");
         
-        // --- MODIFICATION: Restore button on error ---
         getLocationBtn.disabled = false;
         getLocationBtn.innerHTML = originalBtnHTML;
       }
     );
   });
 
-  // --- THE FIX: A single, consolidated event listener for city selection ---
   citySelect.addEventListener("change", () => {
     const selectedOption = citySelect.options[citySelect.selectedIndex];
   
-    // Ensure the selected option is a valid city with coordinates
     if (selectedOption.value && selectedOption.dataset.lat && selectedOption.dataset.lng) {
       const lat = selectedOption.dataset.lat;
       const lon = selectedOption.dataset.lng;
       const cityName = selectedOption.text;
   
-      // --- NEW: Display the coordinates of the selected city ---
       userLocation_lat_long.textContent = `Lat: ${parseFloat(lat).toFixed(4)}, Lon: ${parseFloat(lon).toFixed(4)}`;
 
-      // 1. Fetch the new weather data
       fetchWeather(lat, lon);
   
       // 2. Update the map view
@@ -276,7 +266,6 @@ themeToggleBtn.addEventListener('click', () => {
       return;
     }
 
-    // --- MODIFICATION: Disable button and show loading state ---
     getLocationBtn.disabled = true;
     getLocationBtn.innerHTML = `<span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span role="status"> Detecting...</span>`;
     // loader.classList.remove("d-none");
@@ -289,10 +278,8 @@ themeToggleBtn.addEventListener('click', () => {
           4
         )}`;
 
-        // This function will now handle restoring the button state
         fetchWeather(lat, lon);
 
-        // --- NEW: Call the function to get nearby cities ---
         fetchNearbyCities(lat, lon);
 
         if (map) {
@@ -310,7 +297,6 @@ themeToggleBtn.addEventListener('click', () => {
           userLocation_lat_long.style.color = "red";
         // loader.classList.add("d-none");
         
-        // --- MODIFICATION: Restore button on error ---
         getLocationBtn.disabled = false;
         getLocationBtn.innerHTML = originalBtnHTML;
       }
@@ -339,8 +325,8 @@ async function fetchWeather(lat, lon) {
       clearForecasts();
 
 
-      renderSkeletonCards(dailyForecastDiv, 14); // Render 7 skeletons for the daily forecast
-      renderSkeletonCards(hourlyForecastDiv, 24); // Render 12 for the hourly forecast
+      renderSkeletonCards(dailyForecastDiv, 14); // Render 14 skeletons for the daily forecast
+      renderSkeletonCards(hourlyForecastDiv, 24); // Render 24 for the hourly forecast
     
 
       const response = await fetch(url);
@@ -406,11 +392,15 @@ async function fetchWeather(lat, lon) {
   
 
         dayDiv.innerHTML = `
-          <h5 class="font-semibold">${dayName}</h5>
-          <p>${formattedDate}</p>
-          <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" style="display: block; margin: 0 auto;" />
-          <p>${day.day.condition.text}</p>
-          <p>🌡️ ${day.day.maxtemp_c}°C / ${day.day.mintemp_c}°C</p>
+          <div class="daily-card-summary">
+            <h5 class="font-semibold">${dayName}</h5>
+            <p>${formattedDate}</p>
+            <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" style="display: block; margin: 0 auto;" />
+            <p>${day.day.condition.text}</p>
+            <p>🌡️ ${day.day.maxtemp_c}°C / ${day.day.mintemp_c}°C</p>
+          </div>
+           <div class="daily-card-details" style="margin-top: 10px; border-top: 1px solid rgba(128,128,128,0.3); padding-top: 10px;">
+            </div>
         `;
         dailyForecastDiv.appendChild(dayDiv);
       });
@@ -473,7 +463,6 @@ function updateHourlyForecast(dayIndex) {
     drawPrecipitationChart(hours);
   }
 
-  // --- FIX: Restore the auto-scroll observer logic here ---
   // Only activate the observer if the current-hour-card was actually created.
   if (currentHourCardExists) {
       const observer = new IntersectionObserver(
@@ -506,33 +495,60 @@ function updateHourlyForecast(dayIndex) {
 }
 
 // This new event listener handles clicks on the daily forecast cards
+
 dailyForecastDiv.addEventListener('click', (e) => {
   const clickedCard = e.target.closest('.daily-card');
   if (!clickedCard) return; // Exit if the click was not on a card
 
-    const dayIndex = clickedCard.dataset.dayIndex;
-  activeDayIndex = parseInt(dayIndex);
+  const dayIndex = parseInt(clickedCard.dataset.dayIndex);
+  activeDayIndex = dayIndex; // Keep track of the active day for the separate hourly forecast
 
-  // Remove 'active' class from any currently active card
-  const currentActive = dailyForecastDiv.querySelector('.active');
-  if (currentActive) {
-    currentActive.classList.remove('active');
+  // Handle expansion:
+  const isAlreadyExpanded = clickedCard.classList.contains('expanded');
+  
+  // First, collapse any other card that might be expanded
+  dailyForecastDiv.querySelectorAll('.daily-card.expanded').forEach(card => {
+    if (card !== clickedCard) { // Don't collapse the one we are about to toggle
+      card.classList.remove('expanded');
+      const detailsDiv = card.querySelector('.daily-card-details');
+
+    }
+  });
+
+  // Now, toggle the clicked card's expansion
+  clickedCard.classList.toggle('expanded');
+  const detailsDiv = clickedCard.querySelector('.daily-card-details');
+
+  if (clickedCard.classList.contains('expanded')) {
+    // If it's now expanded, populate its details
+    const dayData = fullForecastData[dayIndex];
+    detailsDiv.innerHTML = `
+      <p><i class="fas fa-info-circle"></i> <strong>Summary:</strong> ${dayData.day.condition.text}</p>
+      <p><i class="fas fa-wind"></i> <strong>Max Wind:</strong> ${dayData.day.maxwind_kph} kph</p>
+      <p><i class="fas fa-tint"></i> <strong>Avg Humidity:</strong> ${dayData.day.avghumidity}%</p>
+      <p><i class="fas fa-sun"></i> <strong>Sunrise:</strong> ${dayData.astro.sunrise}</p>
+      <p><i class="far fa-moon"></i> <strong>Sunset:</strong> ${dayData.astro.sunset}</p>
+    `;
+  } else {
+    // If it's now collapsed, clear its details
+    if (detailsDiv) { // Ensure detailsDiv exists before trying to clear
+        detailsDiv.innerHTML = '';
+    }
   }
 
-  // Add 'active' class to the clicked card
-  clickedCard.classList.add('active');
-
-
-    const selectedDayData = fullForecastData[dayIndex];
-  document.getElementById("weather-date").textContent = formatDayWithDate(selectedDayData.date);
-  document.getElementById("weather-icon").src = "https:" + selectedDayData.day.condition.icon;
-  document.getElementById("weather-condition").textContent = selectedDayData.day.condition.text;
-  document.getElementById("weather-temp-range").textContent = `${selectedDayData.day.maxtemp_c}° / ${selectedDayData.day.mintemp_c}°`;
-  document.getElementById("weather-rain-chance").textContent = `Chance of rain: ${selectedDayData.day.daily_chance_of_rain}%`;
-
+  // This part remains: Update the separate hourly forecast section for the clicked day
   updateHourlyForecast(dayIndex);
-});
 
+  // This part also remains: Manage the '.active' class for visual feedback
+  // (e.g., if you have a style for .active to highlight it differently)
+  const currentActiveHighlight = dailyForecastDiv.querySelector('.card.active');
+  if (currentActiveHighlight) {
+    currentActiveHighlight.classList.remove('active');
+  }
+  clickedCard.classList.add('active'); 
+  
+
+});
   
 
 
@@ -688,11 +704,6 @@ function initChartObserver() {
     observer.observe(chartSection);
 }
 
-
-// ⬇️ ---- ADD THIS ENTIRE BLOCK TO THE END OF SCRIPT.JS ---- ⬇️
-
-// --- New Map Interactivity ---
-
 // --- New Map Interactivity ---
 
 // 1. Logic for clicking on the map to get weather
@@ -751,7 +762,6 @@ mapOverlay.addEventListener('click', toggleMapView); // This makes the "empty bl
 
 
 // 3. Logic for the "Recenter" button
-// ⬇️ ---- REPLACE the existing 'recenterMapBtn' logic with this entire block ---- ⬇️
 
 const recenterMapBtn = document.getElementById('recenter-map-btn');
 const originalRecenterBtnHTML = recenterMapBtn.innerHTML; // Save the original icon
@@ -788,7 +798,6 @@ recenterMapBtn.addEventListener('click', () => {
 });
 
 
-// 4. --- THE FIX FOR CLICK-THROUGH ---
 const mapControlContainer = document.getElementById('maximize-map-btn').parentElement;
 L.DomEvent.on(mapControlContainer, 'mousedown dblclick', L.DomEvent.stopPropagation);
 L.DomEvent.on(mapControlContainer, 'click', L.DomEvent.stopPropagation);
@@ -803,6 +812,5 @@ function renderSkeletonCards(container, count) {
     container.appendChild(skeletonDiv);
   }
 }
-
 
 });
