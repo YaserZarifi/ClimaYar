@@ -41,16 +41,15 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body class="bg-dark text-dark min-vh-100 d-flex flex-column font-vazir dark">
+  <body class="text-dark min-vh-100 d-flex flex-column font-vazir">
     <!-- Header -->
     <header
-      class="bg-dark shadow-sm py-3 text-center sticky-top z-3"
+      class="shadow-sm py-3 text-center sticky-top z-3"
       style="
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        background-color: #222;
         z-index: 1100;
         padding: 0.5rem 1rem;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
@@ -72,11 +71,17 @@
         <p style="margin: 0; font-size: 0.75rem; color: #ccc">
           Your IP: <span id="user-ip">Fetching . . .</span>
         </p>
-        <p style="margin: 0; font-size: 0.7rem; color: #aaa">
+        <p style="margin: 0; font-size: 0.7rem; color: #f1f1f1">
           Approximate Location:
           <span id="user-location-ip">Detecting . . .</span>
         </p>
       </div>
+
+
+        <button id="theme-toggle-btn" class="btn position-absolute" style="top: 12px; left: 12px; border: none;">
+          <i id="theme-toggle-icon" class="fas fa-sun" style="font-size: 1.2rem; color: #ffc107;"></i>
+        </button>
+
     </header>
 
     <!-- Main Content -->
@@ -163,9 +168,9 @@
         ></div>
       </section>
 
-      <h2 class="fs-5 fw-semibold text-center mb-3" style="color: #aaa">
-        Today's & Tomrrow's Hourly Forcast
-      </h2>
+<h2 id="hourly-forecast-title" class="fs-5 fw-semibold text-center mb-3" style="color: #aaa">
+  Hourly Forecast
+</h2>
 
       <section class="mb-5" id="hourly-section">
         <div

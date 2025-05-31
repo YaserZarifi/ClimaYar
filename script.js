@@ -5,8 +5,19 @@ document.addEventListener("DOMContentLoaded", () => {
     "user-location-lat-long"
   );
 
+  
+
+  let fullForecastData = [];
+let chartsFirstDrawn = false; 
+let activeDayIndex = 0;
+
   const getLocationBtn = document.getElementById("get-location");
 const originalBtnHTML = getLocationBtn.innerHTML;
+
+
+const themeToggleBtn = document.getElementById('theme-toggle-btn');
+const themeToggleIcon = document.getElementById('theme-toggle-icon');
+const body = document.body;
 
 
   const weatherCardLoader = document.getElementById("weather-card-loader");
@@ -17,6 +28,7 @@ const originalBtnHTML = getLocationBtn.innerHTML;
   // const loader = document.getElementById("loader");
 
   const dailyForecastDiv = document.getElementById("daily-forecast");
+  
   const hourlyForecastDiv = document.getElementById("hourly-forecast");
 
   // WeatherAPI key
@@ -28,6 +40,56 @@ const originalBtnHTML = getLocationBtn.innerHTML;
   let lat, lon;
   let weatherChart;
   let precipChart;
+
+
+
+
+
+
+
+// Function to set the theme
+const setTheme = (theme) => {
+  if (theme === 'dark') {
+    body.classList.add('dark');
+    themeToggleIcon.classList.remove('fa-sun');
+    themeToggleIcon.classList.add('fa-moon');
+    themeToggleIcon.style.color = '#e0e0e0'; // A nice color for the moon
+  } else {
+    body.classList.remove('dark');
+    themeToggleIcon.classList.remove('fa-moon');
+    themeToggleIcon.classList.add('fa-sun');
+    themeToggleIcon.style.color = '#ffc107'; // A nice color for the sun
+  }
+};
+
+// Check for a saved theme in localStorage and apply it on load
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+  setTheme(savedTheme);
+} else {
+  // Optional: Default to light theme if no theme is saved
+  setTheme('light'); 
+}
+
+// Add click event listener to the button
+themeToggleBtn.addEventListener('click', () => {
+  // Check if the body currently has the 'dark' class
+  if (body.classList.contains('dark')) {
+    // If it's dark, switch to light
+    setTheme('light');
+    localStorage.setItem('theme', 'light');
+  } else {
+    // If it's light, switch to dark
+    setTheme('dark');
+    localStorage.setItem('theme', 'dark');
+  }
+});
+
+
+
+
+
+
 
   function clearForecasts() {
     dailyForecastDiv.innerHTML = "";
@@ -257,20 +319,19 @@ const originalBtnHTML = getLocationBtn.innerHTML;
 
 
 
-// ⬇️ REPLACE the existing 'fetchWeather' function with this new, corrected one ⬇️
 async function fetchWeather(lat, lon) {
     const url = `https://api.weatherapi.com/v1/forecast.json?key=${weatherApiKey}&q=${lat},${lon}&days=9`;
     const cardBody = document.getElementById('weather-card').querySelector('.card-body');
 
-    // --- FIX: Manage visibility without destroying elements ---
-    // First, ensure our required elements are inside the card body (in case an error cleared them before)
+        chartsFirstDrawn = false;
+    activeDayIndex = 0;
+
     if (!cardBody.contains(weatherDetails)) {
-        cardBody.innerHTML = ''; // Clear out the error message
+        cardBody.innerHTML = '';
         cardBody.appendChild(weatherCardLoader);
         cardBody.appendChild(weatherDetails);
     }
     
-    // Now, correctly toggle visibility
     weatherDetails.classList.add("d-none");
     weatherCardLoader.classList.remove("d-none");
 
@@ -281,9 +342,10 @@ async function fetchWeather(lat, lon) {
       if (!response.ok) throw new Error("Error fetching data");
       const data = await response.json();
 
-      const today = data.forecast.forecastday[0];
+      fullForecastData = data.forecast.forecastday; // Store the full forecast
 
-      // This part is now safe because the #weather-details div was never deleted
+      const today = fullForecastData[0];
+
       document.getElementById("loc").textContent = data.location.name;
       document.getElementById("weather-date").textContent = formatDayWithDate(
         today.date
@@ -300,7 +362,6 @@ async function fetchWeather(lat, lon) {
         "weather-rain-chance"
       ).textContent = `Chance of rain: ${today.day.daily_chance_of_rain}%`;
       
-      // --- FIX: Hide loader and show the populated details ---
       weatherCardLoader.classList.add("d-none");
       weatherDetails.classList.remove("d-none");
 
@@ -316,7 +377,7 @@ async function fetchWeather(lat, lon) {
       ];
 
       dailyForecastDiv.innerHTML = '';
-      data.forecast.forecastday.forEach((day) => {
+      fullForecastData.forEach((day, index) => { // Added 'index' here
         const dateObj = new Date(day.date);
         const dayName = daysOfWeek[dateObj.getDay()];
         const formattedDate = `${dateObj.getDate()}/${
@@ -324,7 +385,8 @@ async function fetchWeather(lat, lon) {
         }`;
 
         const dayDiv = document.createElement("div");
-        dayDiv.classList.add("card");
+        dayDiv.classList.add("card", "daily-card"); // Added 'daily-card' class for listener
+        dayDiv.dataset.dayIndex = index; // Add data-attribute to identify the day
 
         const todayDate = new Date();
         const isToday =
@@ -333,56 +395,84 @@ async function fetchWeather(lat, lon) {
           dateObj.getFullYear() === todayDate.getFullYear();
 
         if (isToday) {
-          dayDiv.classList.add("today-card");
+          dayDiv.classList.add("today-card", "active"); 
         }
 
-                console.log("--------------------------------------------------");
-        console.log(day.day.condition.icon);
+  
 
         dayDiv.innerHTML = `
-        <h5 class="font-semibold">${dayName}</h5>
-        <p>${formattedDate}</p>
-        <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" style="display: block; margin: 0 auto;" />
-        <p>${day.day.condition.text}</p>
-        <p>🌡️ ${day.day.maxtemp_c}°C / ${day.day.mintemp_c}°C</p>
-    `;
+          <h5 class="font-semibold">${dayName}</h5>
+          <p>${formattedDate}</p>
+          <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" style="display: block; margin: 0 auto;" />
+          <p>${day.day.condition.text}</p>
+          <p>🌡️ ${day.day.maxtemp_c}°C / ${day.day.mintemp_c}°C</p>
+        `;
         dailyForecastDiv.appendChild(dayDiv);
       });
+            
 
-      hourlyForecastDiv.innerHTML = '';
-      const hoursToday = data.forecast.forecastday[0].hour;
-      const hoursTomorrow = data.forecast.forecastday[1]?.hour || [];
-      const now = new Date();
-      const currentHour = now.getHours();
-      const currentDate = now.toISOString().split("T")[0];
-
-      [...hoursToday, ...hoursTomorrow].forEach((hour) => {
-        const hourDiv = document.createElement("div");
-        hourDiv.classList.add("card");
-        const time = hour.time.split(" ")[1];
-        const hourDate = hour.time.split(" ")[0];
-        const hourHour = parseInt(time.split(":")[0]);
-
-        if (hourDate === currentDate && hourHour === currentHour) {
-          hourDiv.classList.add("current-hour-card");
-          hourDiv.setAttribute("id", "current-hour");
-        }
+ updateHourlyForecast(0); 
+      initChartObserver(); 
+      // Show today's hourly forecast by default
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+      
+      cardBody.innerHTML = "<p class='text-danger fw-bold'>Could not fetch weather data.</p>";
+      clearForecasts();
+    } finally {
+        getLocationBtn.disabled = false;
+        getLocationBtn.innerHTML = originalBtnHTML;
+    }
+}
 
 
-        console.log("-------------------------------------sdfsdf--------------");
-        console.log(hour.condition.icon);
 
-        hourDiv.innerHTML = `
-          <strong class="d-block mb-1">${time}</strong>
-          <img src="https:${hour.condition.icon}"
-            class="mb-1" style="display: block; margin: 0 auto;" />
-          <span class="small">${hour.temp_c}°C - ${hour.condition.text}</span>
-  `;
-        hourlyForecastDiv.appendChild(hourDiv);
-      });
+// This new function updates the hourly forecast section for a specific day
+function updateHourlyForecast(dayIndex) {
+  const hourlyForecastTitle = document.getElementById("hourly-forecast-title");
+  const selectedDay = fullForecastData[dayIndex];
+  const dayName = new Date(selectedDay.date).toLocaleDateString('en-US', { weekday: 'long' });
 
+  hourlyForecastTitle.textContent = `Hourly Forecast for ${dayName}`;
+  hourlyForecastDiv.innerHTML = ''; // Clear previous hourly forecast
+
+  const hours = selectedDay.hour;
+  const now = new Date();
+  const currentHour = now.getHours();
+  const todayDateStr = now.toISOString().split("T")[0];
+  let currentHourCardExists = false; // Flag to see if the special card was created
+
+  hours.forEach((hour) => {
+    const hourDiv = document.createElement("div");
+    hourDiv.classList.add("card");
+    const time = hour.time.split(" ")[1];
+    const hourDate = hour.time.split(" ")[0];
+    const hourHour = parseInt(time.split(":")[0]);
+
+    if (hourDate === todayDateStr && hourHour === currentHour) {
+      hourDiv.classList.add("current-hour-card");
+      hourDiv.setAttribute("id", "current-hour");
+      currentHourCardExists = true; // Set the flag because we found the current hour
+    }
+
+    hourDiv.innerHTML = `
+      <strong class="d-block mb-1">${time}</strong>
+      <img class="mb-1" style="display: block; margin: 0 auto;" src="https:${hour.condition.icon} " />
+      <span class="small">${hour.temp_c}°C - ${hour.condition.text}</span>
+    `;
+    hourlyForecastDiv.appendChild(hourDiv);
+  });
+  
+  if (chartsFirstDrawn) {
+    drawChart(hours);
+    drawPrecipitationChart(hours);
+  }
+
+  // --- FIX: Restore the auto-scroll observer logic here ---
+  // Only activate the observer if the current-hour-card was actually created.
+  if (currentHourCardExists) {
       const observer = new IntersectionObserver(
-        (entries, observer) => {
+        (entries, obs) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
               const currentHourCard = document.getElementById("current-hour");
@@ -392,12 +482,9 @@ async function fetchWeather(lat, lon) {
                   inline: "center",
                   block: "nearest",
                 });
-                currentHourCard.classList.add("highlight");
-                setTimeout(() => {
-                  currentHourCard.classList.remove("highlight");
-                }, 5000);
               }
-              observer.disconnect();
+              // Disconnect after the scroll has been triggered once
+              obs.disconnect();
             }
           });
         },
@@ -410,24 +497,36 @@ async function fetchWeather(lat, lon) {
       if (hourlySection) {
         observer.observe(hourlySection);
       }
+  }
+}
 
-      cachedHourlyData = [...hoursToday, ...hoursTomorrow];
-      initChartObserver();
-    } catch (error) {
-      console.error("Error fetching weather data:", error);
-      
-      // --- FIX: On error, just replace the card body content with the error ---
-      cardBody.innerHTML = "<p class='text-danger fw-bold'>Could not fetch weather data.</p>";
-      clearForecasts();
-    } finally {
-        // This restores the "Use My Location" button state
-        getLocationBtn.disabled = false;
-        getLocationBtn.innerHTML = originalBtnHTML;
-    }
+// This new event listener handles clicks on the daily forecast cards
+dailyForecastDiv.addEventListener('click', (e) => {
+  const clickedCard = e.target.closest('.daily-card');
+  if (!clickedCard) return; // Exit if the click was not on a card
+
+    const dayIndex = clickedCard.dataset.dayIndex;
+  activeDayIndex = parseInt(dayIndex);
+
+  // Remove 'active' class from any currently active card
+  const currentActive = dailyForecastDiv.querySelector('.active');
+  if (currentActive) {
+    currentActive.classList.remove('active');
   }
 
+  // Add 'active' class to the clicked card
+  clickedCard.classList.add('active');
 
 
+    const selectedDayData = fullForecastData[dayIndex];
+  document.getElementById("weather-date").textContent = formatDayWithDate(selectedDayData.date);
+  document.getElementById("weather-icon").src = "https:" + selectedDayData.day.condition.icon;
+  document.getElementById("weather-condition").textContent = selectedDayData.day.condition.text;
+  document.getElementById("weather-temp-range").textContent = `${selectedDayData.day.maxtemp_c}° / ${selectedDayData.day.mintemp_c}°`;
+  document.getElementById("weather-rain-chance").textContent = `Chance of rain: ${selectedDayData.day.daily_chance_of_rain}%`;
+
+  updateHourlyForecast(dayIndex);
+});
 
   
 
@@ -554,19 +653,27 @@ async function fetchWeather(lat, lon) {
     });
   }
 
-  function initChartObserver() {
+function initChartObserver() {
     const chartSection = document.getElementById("charts-section");
     if (!chartSection) return;
-
-    let chartsDrawn = false;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !chartsDrawn) {
-            drawChart(cachedHourlyData);
-            drawPrecipitationChart(cachedHourlyData);
-            chartsDrawn = true;
+          // Check if the section is visible AND if the charts haven't been drawn yet
+          if (entry.isIntersecting && !chartsFirstDrawn) {
+            
+            // Get the hourly data for the currently active day
+            const hoursForActiveDay = fullForecastData[activeDayIndex].hour;
+
+            // Draw the charts for the first time
+            drawChart(hoursForActiveDay);
+            drawPrecipitationChart(hoursForActiveDay);
+            
+            // Set the flag to true so they don't re-draw on scroll
+            chartsFirstDrawn = true;
+            
+            // We can now disconnect the observer as its job is done
             observer.disconnect();
           }
         });
@@ -574,5 +681,5 @@ async function fetchWeather(lat, lon) {
       { threshold: 0.3 }
     );
     observer.observe(chartSection);
-  }
+}
 });

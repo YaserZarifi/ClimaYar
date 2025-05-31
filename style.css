@@ -31,7 +31,7 @@ body.font-inter {
 
 #daily-forecast > div,
 #hourly-forecast > div {
-  background: rgb(116, 115, 120);
+  background: rgb(255, 255, 255);
   border-radius: 0.75rem;
   box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
   padding: 0.5rem 1rem;
@@ -43,8 +43,8 @@ body.font-inter {
 
 .dark #daily-forecast > div,
 .dark #hourly-forecast > div {
-  background: #403f43;
-  color: rgb(43, 41, 41);
+  background: #c6c6c9;
+  color: rgb(201, 189, 255);
 }
 
 #daily-forecast img,
@@ -207,4 +207,15 @@ body.dark .loader {
 #city-map {
   position: relative; /* or absolute/fixed depending on your layout */
   z-index: 1; /* a controlled, modest z-index */
+}
+
+/* Add this to the end of style.css */
+.daily-card.active {
+  border: 2px solid #6366f1 !important;
+  background-color: #372ea3 !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  background-color: #4f46e5 !important; /* A slightly lighter purple from the theme */
+  border-color: #818cf8 !important;
+  color: #e5e7eb !important; 
 }
