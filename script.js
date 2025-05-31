@@ -338,6 +338,11 @@ async function fetchWeather(lat, lon) {
     try {
       clearForecasts();
 
+
+      renderSkeletonCards(dailyForecastDiv, 14); // Render 7 skeletons for the daily forecast
+      renderSkeletonCards(hourlyForecastDiv, 24); // Render 12 for the hourly forecast
+    
+
       const response = await fetch(url);
       if (!response.ok) throw new Error("Error fetching data");
       const data = await response.json();
@@ -682,4 +687,122 @@ function initChartObserver() {
     );
     observer.observe(chartSection);
 }
+
+
+// ⬇️ ---- ADD THIS ENTIRE BLOCK TO THE END OF SCRIPT.JS ---- ⬇️
+
+// --- New Map Interactivity ---
+
+// --- New Map Interactivity ---
+
+// 1. Logic for clicking on the map to get weather
+map.on('click', function(e) {
+  const lat = e.latlng.lat;
+  const lon = e.latlng.lng;
+
+  // Move the marker to the clicked location
+  marker.setLatLng(e.latlng).setPopupContent(`Weather at ${lat.toFixed(2)}, ${lon.toFixed(2)}`).openPopup();
+
+  // Update the coordinate display
+  userLocation_lat_long.textContent = `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
+  
+  // Fetch weather for the new coordinates
+  fetchNearbyCities(lat, lon);
+  fetchWeather(lat, lon);
+});
+
+// 2. Logic for the Maximize button
+
+// Get all elements needed for the map popup view
+const maximizeMapBtn = document.getElementById('maximize-map-btn');
+const mapContainer = document.getElementById('map-container');
+const mapOverlay = document.getElementById("map-overlay");
+
+// 1. A single, reusable function to open and close the map
+function toggleMapView() {
+  mapContainer.classList.toggle('maximized');
+  const isMaximized = mapContainer.classList.contains('maximized');
+
+  // Show or hide the dark background overlay
+  mapOverlay.style.display = isMaximized ? 'block' : 'none';
+
+  // Change the button's icon and title
+  const icon = maximizeMapBtn.querySelector('i');
+  if (isMaximized) {
+    icon.classList.remove('fa-expand');
+    icon.classList.add('fa-compress');
+    maximizeMapBtn.title = "Minimize map";
+  } else {
+    icon.classList.remove('fa-compress');
+    icon.classList.add('fa-expand');
+    maximizeMapBtn.title = "Maximize map";
+  }
+
+  // Tell Leaflet to recalculate its size after the change
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 300);
+}
+
+// 2. Attach the same function to both the button and the overlay
+maximizeMapBtn.addEventListener('click', toggleMapView);
+mapOverlay.addEventListener('click', toggleMapView); // This makes the "empty black space" clickable
+
+
+
+// 3. Logic for the "Recenter" button
+// ⬇️ ---- REPLACE the existing 'recenterMapBtn' logic with this entire block ---- ⬇️
+
+const recenterMapBtn = document.getElementById('recenter-map-btn');
+const originalRecenterBtnHTML = recenterMapBtn.innerHTML; // Save the original icon
+
+recenterMapBtn.addEventListener('click', () => {
+  if (navigator.geolocation) {
+    // 1. Show the loading spinner
+    recenterMapBtn.disabled = true;
+    recenterMapBtn.innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>';
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        
+        // Fly to the user's location on the map
+        map.flyTo([lat, lon], 13);
+        marker.setLatLng([lat, lon]).setPopupContent("Your Location").openPopup();
+
+        // 2. Restore the button after success
+        recenterMapBtn.disabled = false;
+        recenterMapBtn.innerHTML = originalRecenterBtnHTML;
+      },
+      (err) => {
+        // Handle error if user denies location
+        alert("Could not get your location. Please grant permission.");
+        
+        // 3. Restore the button on error
+        recenterMapBtn.disabled = false;
+        recenterMapBtn.innerHTML = originalRecenterBtnHTML;
+      }
+    );
+  }
+});
+
+
+// 4. --- THE FIX FOR CLICK-THROUGH ---
+const mapControlContainer = document.getElementById('maximize-map-btn').parentElement;
+L.DomEvent.on(mapControlContainer, 'mousedown dblclick', L.DomEvent.stopPropagation);
+L.DomEvent.on(mapControlContainer, 'click', L.DomEvent.stopPropagation);
+
+
+
+function renderSkeletonCards(container, count) {
+  container.innerHTML = ''; // Clear any previous content
+  for (let i = 0; i < count; i++) {
+    const skeletonDiv = document.createElement('div');
+    skeletonDiv.classList.add('skeleton-card');
+    container.appendChild(skeletonDiv);
+  }
+}
+
+
 });

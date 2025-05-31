@@ -42,6 +42,12 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body class="text-dark min-vh-100 d-flex flex-column font-vazir">
+
+
+      <div id="map-overlay" style="display: none;"></div>
+
+
+
     <!-- Header -->
     <header
       class="shadow-sm py-3 text-center sticky-top z-3"
@@ -138,11 +144,18 @@
                   <span id="user-location-lat-long"></span>
                 </p>
 
-                <div
-                  id="city-map"
-                  style="height: 190px"
-                  class="mt-3 rounded shadow-sm"
-                ></div>
+                <div id="map-overlay" style="display: none;"></div>
+
+                  <div id="map-container" class="mt-3 rounded shadow-sm" style="position: relative; height: 190px;">
+                    <div id="city-map" style="height: 100%;"></div> <div id="map-custom-controls">
+                      <button id="maximize-map-btn" class="btn btn-light btn-sm" title="Maximize map">
+                        <i class="fas fa-expand"></i>
+                      </button>
+                      <button id="recenter-map-btn" class="btn btn-light btn-sm mt-1" title="Go to my location">
+                        <i class="fas fa-location-arrow"></i>
+                      </button>
+                      </div>
+                  </div>
 
                 <!-- Loader -->
 

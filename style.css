@@ -219,3 +219,97 @@ body.dark .loader {
   border-color: #818cf8 !important;
   color: #e5e7eb !important; 
 }
+
+
+#map-container.maximized {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important; 
+  height: 100vh !important;
+  z-index: 2000 !important;
+  border-radius: 0 !important;
+}
+
+
+
+/* In style.css */
+
+/* 1. Style for the background overlay */
+#map-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+  z-index: 1999; /* Below the map window, above everything else on the page */
+  display: none; /* Initially hidden */
+}
+
+/* 2. Styles for the maximized map "window" */
+#map-container.maximized {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 90vw !important;
+  height: 85vh !important;
+  max-width: 1200px; /* Optional: max width on very large screens */
+  z-index: 2000 !important; /* The map window itself, above the overlay */
+  border-radius: 0.5rem !important;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+/* 3. Styles for your custom map controls container */
+#map-custom-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  /* This z-index ensures controls are on top of Leaflet map panes (tiles, markers, etc.)
+     Leaflet panes can go up to z-index 700 for popups. */
+  z-index: 800;
+}
+
+
+/* Styles for the skeleton placeholder cards */
+.skeleton-card {
+  background-color: #2d3748; /* A dark, neutral color */
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  min-width: 100px;
+  height: 190px; /* Should match the approximate height of your real cards */
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden; /* This is crucial for the shimmer effect */
+}
+
+/* The shimmer animation element */
+.skeleton-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+/* The keyframes for the shimmer animation */
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
+#map-custom-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2001; 
+}
