@@ -86,22 +86,31 @@
           <!-- Weather Card (Left) -->
           <div class="col-md-6">
             <section id="weather-card" class="card text-center shadow-sm h-100">
-              <div class="card-body">
-                <h2 id="weather-date" class="fs-6 fw-semibold mb-2"></h2>
-                <h2 id="loc" class="fs-5 fw-bold mb-3"></h2>
-                <p
-                  id="weather-temp-range"
-                  class="display-1 fw-bold text-center my-3"
-                ></p>
-                <img
-                  id="weather-icon"
-                  class="mx-auto d-block mb-2"
-                  width="80"
-                  height="80"
-                  alt="Weather Icon"
-                />
-                <p id="weather-condition" class="fs-6 mb-1"></p>
-                <p id="weather-rain-chance" class="small text-primary"></p>
+              <div class="card-body d-flex justify-content-center align-items-center">
+                <div id="weather-card-loader">
+                  <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <p class="mt-2">Fetching weather...</p>
+                </div>
+
+                <div id="weather-details" class="d-none">
+                  <h2 id="weather-date" class="fs-6 fw-semibold mb-2"></h2>
+                  <h2 id="loc" class="fs-5 fw-bold mb-3"></h2>
+                  <p
+                    id="weather-temp-range"
+                    class="display-1 fw-bold text-center my-3"
+                  ></p>
+                  <img
+                    id="weather-icon"
+                    class="mx-auto d-block mb-2"
+                    width="80"
+                    height="80"
+                    alt="Weather Icon"
+                  />
+                  <p id="weather-condition" class="fs-6 mb-1"></p>
+                  <p id="weather-rain-chance" class="small text-primary"></p>
+                </div>
               </div>
             </section>
           </div>
@@ -117,21 +126,7 @@
                 </button>
                 <select id="city-select" class="form-select w-100 mb-3">
                   <option value="">Select City</option>
-                  <option value="Tehran" data-lat="35.6892" data-lng="51.3890">
-                    Tehran
-                  </option>
-                  <option value="Mashhad" data-lat="36.2605" data-lng="59.6168">
-                    Mashhad
-                  </option>
-                  <option value="Isfahan" data-lat="32.6546" data-lng="51.6680">
-                    Isfahan
-                  </option>
-                  <option value="Shiraz" data-lat="29.5918" data-lng="52.5836">
-                    Shiraz
-                  </option>
-                  <option value="Tabriz" data-lat="38.0962" data-lng="46.2738">
-                    Tabriz
-                  </option>
+                  
                 </select>
 
                 <p class="small fw-semibold" style="color: #888">
@@ -146,11 +141,11 @@
 
                 <!-- Loader -->
 
-                <div id="loader" class="mx-auto my-4 d-none">
+                <!-- <div id="loader" class="mx-auto my-4 d-none">
                   <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
                   </div>
-                </div>
+                </div> -->
               </div>
             </section>
           </div>
