@@ -75,9 +75,6 @@ ClimaYar is an interactive web application that provides users with current weat
     * Loading states (spinners, messages) provide feedback during API calls.
     * Theme changes (light/dark) and map view changes (normal/maximized) are handled with smooth transitions.
 
-## File Structure
-
-/├── index.html        # Main HTML page structure├── style.css         # All custom CSS styles├── script.js         # Core JavaScript logic, API interactions, DOM manipulation├── images/           # Folder for local background images/patterns│   └── light-pattern.png  # Example for light theme background (update if different)└── README.md         # This file*(Note: The dark mode background uses an embedded SVG pattern directly in the CSS and does not require a separate image file.)*
 
 ## Potential Future Enhancements
 
